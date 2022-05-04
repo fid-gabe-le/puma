@@ -262,7 +262,16 @@ module Puma
 
             @ios[ios_len..-1].each do |i|
               addr = loc_addr_str i
-              log_writer.log "* #{log_msg} on ssl://#{addr}?#{uri.query}"
+              # Hide keystore password from logs
+              uri_query = uri.query
+              start_word = "keystore-pass"
+              end_word = "verify_mode"
+              start_index = uri_query.index(start_word) + start_word.length + 1
+              end_index = uri_query.index(end_word) - 1
+
+              uri_query[start_index...end_index] = "****"
+              logger.log "* #{log_msg} on ssl://#{addr}?#{uri_query}"
+              log_writer.log "* #{log_msg} on ssl://#{addr}?#{uri_query}"
             end
           end
 
